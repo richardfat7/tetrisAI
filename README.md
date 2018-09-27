@@ -1,5 +1,6 @@
 # Scope of study / Goal
-- each player do 1 step? (same piece per second)
+- each player do 1 step? (same piece per second) -> attack per piece / safe condition
+- opp do N step, ai do 1 step
 - as fast as possible
 
 # Main focus
@@ -8,7 +9,7 @@
 # Method
 - CNN on the field surface -> get good or bad case (precompute?) 
 - reinforcement learn on state(field, cur, next, oppstate) [http://cs231n.stanford.edu/reports/2016/pdfs/121_Report.pdf]
-- CNN whole state (
+- CNN whole state
 - heuristic [https://codemyroad.wordpress.com/2013/04/14/tetris-ai-the-near-perfect-player/]
 
 # Representation of the field
