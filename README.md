@@ -1,3 +1,7 @@
+# To do
+- survey: keyword, author, group
+- design model
+
 # Scope of study / Goal
 - each player do 1 step? (same piece per second) -> attack per piece / safe condition
 - opp do N step, ai do 1 step
