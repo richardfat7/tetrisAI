@@ -1,7 +1,9 @@
-# Scope of study
+# Scope of study / Goal
 - each player do 1 step? (same piece per second)
 - as fast as possible
-- 
+
+# Main focus
+- Improve two player level rather than stack forever
 
 # Method
 - CNN on the field surface -> get good or bad case (precompute?) 
