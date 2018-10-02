@@ -24,6 +24,12 @@ Reinforcement of Local Pattern Cases for Playing Tetris (http://www.aaai.org/Pap
 
 Learning to play Tetris applying reinforcement learning methods (https://pdfs.semanticscholar.org/e9f7/5616163593af943a26434ec0a139fef033ef.pdf)
 
+State Definition in the Tetris Task: Designing a Hybrid Model of Cognition (http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.83.7162&rep=rep1&type=pdf)
+
+Using a Genetic Algorithm to Weight an Evaluation Function for Tetris (https://pdfs.semanticscholar.org/2f55/98f4a2e211681835a500c484e262bdbaf50d.pdf)
+
+Reinforcement Learning and Neural Networks for Tetris (http://www.mcgovern-fagg.org/amy/courses/cs5033_fall2007/Lundgaard_McKee.pdf)
+
 
 # Scope of study / Goal
 - each player do 1 step? (same piece per second) -> attack per piece / safe condition
