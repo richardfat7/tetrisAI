@@ -77,6 +77,11 @@
 			<artifactId>log4j-1.2.15</artifactId>
 			<version>LOCAL</version>
 		</dependency>
+		<dependency>
+			<groupId>mu.nu.nullpo.local</groupId>
+			<artifactId>jep</artifactId>
+			<version>LOCAL</version>
+		</dependency>
 	</dependencies>
 	
 </project>

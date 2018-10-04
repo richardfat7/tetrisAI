@@ -15,6 +15,6 @@
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="mu.nu.nullpo.gui.slick.NullpoMinoSlick"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="nullpomino-run"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djava.library.path=lib:/usr/local/lib/python2.7/dist-packages/jep"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djava.library.path=lib"/>
 <stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="${workspace_loc:nullpomino-run/target/install}"/>
 </launchConfiguration>
