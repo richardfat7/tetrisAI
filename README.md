@@ -1,3 +1,5 @@
+`Forked from nullpomino/nullpomino`
+
 # To do
 - survey: keyword, author, group
 - design model
@@ -50,6 +52,7 @@ Reinforcement Learning and Neural Networks for Tetris (http://www.mcgovern-fagg.
 - contour/surface
 - top two level [http://www.math.tau.ac.il/~mansour/rl-course/student_proj/livnat/tetris.html]
 - how to handle holes? and height?
+
 
 # Nullpomino
 
