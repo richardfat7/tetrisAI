@@ -1,5 +1,6 @@
 mu.nu.nullpo.game.subsystem.ai.BasicAI
 mu.nu.nullpo.game.subsystem.ai.PvPAI
+mu.nu.nullpo.game.subsystem.ai.BasePvPAI
 mu.nu.nullpo.game.subsystem.ai.TSpinAI
 net.tetrisconcept.poochy.nullpomino.ai.PoochyBot
 net.tetrisconcept.poochy.nullpomino.ai.PoochyBotDefensive

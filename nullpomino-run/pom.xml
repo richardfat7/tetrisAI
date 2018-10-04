@@ -97,6 +97,21 @@
 							</resources>
 						</configuration>
 					</execution>
+					<execution>
+						<id>workingdir-pyai-scripts</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/install/pyai-scripts</outputDirectory>
+							<resources>
+								<resource>
+									<directory>pyai-scripts</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 			<plugin>

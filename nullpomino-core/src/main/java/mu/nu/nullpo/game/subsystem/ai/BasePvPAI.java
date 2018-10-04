@@ -31,19 +31,19 @@ package mu.nu.nullpo.game.subsystem.ai;
 import org.apache.log4j.Logger;
 
 /**
- * PvPAI - PvP AI Class
+ * BasePvPAI - Base PvP AI Class
  */
-public class PvPAI extends PyAI {
+public class BasePvPAI extends PyAI {
 	/** Log */
-	static Logger log = Logger.getLogger(PvPAI.class);
+	static Logger log = Logger.getLogger(BasePvPAI.class);
 	
-	protected static String scriptPath = "pyai-scripts/PvPAI.py";
+	protected static String scriptPath = "pyai-scripts/BasePvPAI.py";
 
 	public String getName() {
 		return name;
 	}
 	
-	public PvPAI() {
-		super("PvPAI", scriptPath, PvPAI.class);
+	public BasePvPAI() {
+		super("BasePvPAI", scriptPath, BasePvPAI.class);
 	}
 }
