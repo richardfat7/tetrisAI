@@ -128,6 +128,7 @@ public class PvPAI extends DummyAI implements AIPlayer {
 		try {
 			jep.set("engine", engine);
 			jep.set("playerID", playerID);
+			jep.set("ctrl", ctrl);
 			jep.eval("ai.setControl(engine, playerID, ctrl)");
 		} catch (JepException j) {
 			log.error("Error in setControl, ", j);
@@ -137,7 +138,9 @@ public class PvPAI extends DummyAI implements AIPlayer {
 	public void shutdown(GameEngine engine, int playerID) {
 		try {
 			if (jep != null) {
-				jep.eval("ai.shutdown()");
+				jep.set("engine", engine);
+				jep.set("playerID", playerID);
+				jep.eval("ai.shutdown(engine, playerID)");
 				jep.close();
 			}
 		} catch (JepException j) {
