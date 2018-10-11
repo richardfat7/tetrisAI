@@ -23,6 +23,7 @@ mu.nu.nullpo.game.subsystem.mode.PhantomManiaMode
 mu.nu.nullpo.game.subsystem.mode.FinalMode
 mu.nu.nullpo.game.subsystem.mode.TimeAttackMode
 mu.nu.nullpo.game.subsystem.mode.PracticeMode
+mu.nu.nullpo.game.subsystem.mode.AITrainMode
 mu.nu.nullpo.game.subsystem.mode.GemManiaMode
 mu.nu.nullpo.game.subsystem.mode.VSLineRaceMode
 mu.nu.nullpo.game.subsystem.mode.VSDigRaceMode

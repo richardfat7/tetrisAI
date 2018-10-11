@@ -25,6 +25,7 @@ public abstract class BaseGameState extends BasicGameState {
 	 * State initialization
 	 */
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
+		container.setAlwaysRender(true);
 	}
 
 	/**
@@ -34,8 +35,8 @@ public abstract class BaseGameState extends BasicGameState {
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
 		// Lost the focus
 		if(!container.hasFocus()) {
-			if(!NullpoMinoSlick.alternateFPSTiming) NullpoMinoSlick.alternateFPSSleep();
-			return;
+			//if(!NullpoMinoSlick.alternateFPSTiming) NullpoMinoSlick.alternateFPSSleep();
+			//return;
 		}
 
 		// Do user's code
@@ -61,10 +62,10 @@ public abstract class BaseGameState extends BasicGameState {
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
 		// Lost the focus
 		if(!container.hasFocus()) {
-			GameKeySlick.gamekey[0].clear();
-			GameKeySlick.gamekey[1].clear();
-			if(NullpoMinoSlick.alternateFPSTiming) NullpoMinoSlick.alternateFPSSleep();
-			return;
+			//GameKeySlick.gamekey[0].clear();
+			//GameKeySlick.gamekey[1].clear();
+			//if(NullpoMinoSlick.alternateFPSTiming) NullpoMinoSlick.alternateFPSSleep();
+			//return;
 		}
 
 		// Do user's code

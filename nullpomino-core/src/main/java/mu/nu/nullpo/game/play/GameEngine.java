@@ -930,7 +930,7 @@ public class GameEngine {
 		}
 		owner.receiver.playerInit(this, playerID);
 		if(ai != null) {
-			ai.shutdown(this, playerID);
+			//ai.shutdown(this, playerID);
 			ai.init(this, playerID);
 		}
 	}
@@ -941,7 +941,7 @@ public class GameEngine {
 	public void shutdown() {
 		//log.debug("GameEngine shutdown() playerID:" + playerID);
 
-		if(ai != null) ai.shutdown(this, playerID);
+		//if(ai != null) ai.shutdown(this, playerID);
 		owner = null;
 		ruleopt = null;
 		wallkick = null;
@@ -1685,7 +1685,7 @@ public class GameEngine {
 		gameActive = false;
 		timerActive = false;
 		isInGame = false;
-		if(ai != null) ai.shutdown(this, playerID);
+		//if(ai != null) ai.shutdown(this, playerID);
 	}
 
 	/**

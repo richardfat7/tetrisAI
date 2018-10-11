@@ -67,8 +67,17 @@ public abstract class PyAI extends DummyAI implements AIPlayer {
 
 	/** Did the thinking thread finish successfully? */
 	public boolean thinkComplete;
+
+	/** When true,Running thread */
+	//public volatile boolean threadRunning;
+
+	/** Thread for executing the think routine */
+	//public Thread thread;
 	
 	protected Jep jep;
+	{
+		System.out.println(this.jep);
+	}
 	
 	protected String scriptPath;
 	
@@ -81,19 +90,31 @@ public abstract class PyAI extends DummyAI implements AIPlayer {
 		this.name = name;
 		this.scriptPath = scriptPath;
 	}
+	
+	public void initJEP() {
+		if (jep == null)
+			try {
+				jep = new Jep();
+				jep.eval("import sys");
+				jep.eval("sys.path.append('pyai-scripts')");
+			    jep.runScript(scriptPath);
+				jep.set("AIName", getName());
+			    jep.eval("ai = exportAI(AIName)");
+			    Object v = jep.getValue("ai.name");
+				log.debug("AI name is "+v.toString());
+			} catch (JepException j) {
+				log.error("JEP cannot be created!", j);
+			}
+	}
 
 	public void init(GameEngine engine, int playerID) {
 		try {
-			jep = new Jep();
-			jep.eval("import sys");
-			jep.eval("sys.path.append('pyai-scripts')");
-		    jep.runScript(scriptPath);
-			jep.set("engine", engine);
-			jep.set("playerID", playerID);
-			jep.set("AIName", getName());
-		    jep.eval("ai = exportAI(AIName, engine, playerID)");
-		    Object v = jep.getValue("ai.name");
-			log.debug("AI name is "+v.toString());
+			initJEP();
+			if (jep != null) {
+				jep.set("engine", engine);
+				jep.set("playerID", playerID);
+			    jep.eval("ai.init(engine, playerID)");
+			}
 		} catch (JepException j) {
 			log.error("JEP cannot be init!", j);
 		}
@@ -148,7 +169,7 @@ public abstract class PyAI extends DummyAI implements AIPlayer {
 	}
 
 	public void setControl(GameEngine engine, int playerID, Controller ctrl) {
-		log.info("In setControl");
+		//log.info("In setControl");
 		try {
 			if (jep != null) {
 				jep.set("engine", engine);
@@ -174,6 +195,7 @@ public abstract class PyAI extends DummyAI implements AIPlayer {
 		try {
 			if (jep != null) {
 				jep.close();
+				jep = null;
 			}
 		} catch (JepException j) {
 			log.error("Error in shutdown, ", j);
@@ -189,6 +211,16 @@ public abstract class PyAI extends DummyAI implements AIPlayer {
 			}
 		} catch (JepException j) {
 			log.error("Error in renderHint, ", j);
+		}
+	}
+
+	public void invoke(String command) {
+		try {
+			if (jep != null) {
+				jep.eval(command);
+			}
+		} catch (JepException j) {
+			log.error("Error in invoke, ", j);
 		}
 	}
 }

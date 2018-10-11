@@ -40,17 +40,33 @@ import org.newdawn.slick.state.StateBasedGame;
 
 /**
  * Title screen state
+ * 
+ * NOTE(oliver): This is the main menu guys!
  */
 public class StateTitle extends DummyMenuChooseState {
 	/** This state's ID */
 	public static final int ID = 1;
 
 	/** Strings for menu choices */
-	private static final String[] CHOICES = {"START", "REPLAY", "NETPLAY", "OPTIONS", "EXIT"};
+	private static final String[] CHOICES = {
+		"START",
+		"REPLAY", 
+		"NETPLAY", 
+		"OPTIONS", 
+		"EXIT",
+		"AI DOJO" // NOTE(oliver): I added a title for our new training section!
+	};
 
 	/** UI Text identifier Strings */
+	// NOTE(oliver): These are key that are used for lookups in config/lang/slick_default.properties
+	// These are used to show the descriptions in the bottom of the main menu!
 	private static final String[] UI_TEXT = {
-        "Title_Start", "Title_Replay", "Title_NetPlay", "Title_Config", "Title_Exit"
+        "Title_Start",        
+        "Title_Replay", 
+        "Title_NetPlay", 
+        "Title_Config", 
+        "Title_Exit",
+        "Title_Train" // NOTE(oliver): I added this along with the title.
 	};
 
 	/** Log */
@@ -60,7 +76,8 @@ public class StateTitle extends DummyMenuChooseState {
 	protected boolean isNewVersionChecked = false;
 
 	public StateTitle () {
-		maxCursor = 4;
+		// NOTE(oliver): This sets the maximum amount of options in the main menu.
+		maxCursor = 5;
 		minChoiceY = 4;
 	}
 
@@ -160,6 +177,10 @@ public class StateTitle extends DummyMenuChooseState {
 			break;
 		case 4:
 			container.exit();
+			break;
+		case 5:
+			log.debug("LOG(oliver): Selected TRAIN option");
+			game.enterState(dk.itu.ai.StateSelectTraining.ID);
 			break;
 		}
 

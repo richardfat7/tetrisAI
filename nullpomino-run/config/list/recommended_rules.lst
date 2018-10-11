@@ -173,3 +173,7 @@ config/rule/Physician.rul
 
 :SPF VS-BATTLE (BETA)
 config/rule/SPF.rul
+
+:AI TRAINING
+config/rule/StandardAITraining.rul
+config/rule/Standard.rul

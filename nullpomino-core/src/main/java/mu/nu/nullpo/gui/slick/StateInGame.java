@@ -44,6 +44,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
+import org.newdawn.slick.util.Log;
 
 /**
  * Game screen state (Local play)
@@ -320,8 +321,8 @@ public class StateInGame extends BasicGameState {
 	 */
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
 		if(!container.hasFocus()) {
-			if(!NullpoMinoSlick.alternateFPSTiming) NullpoMinoSlick.alternateFPSSleep(true);
-			return;
+			//if(!NullpoMinoSlick.alternateFPSTiming) NullpoMinoSlick.alternateFPSSleep(true);
+			//return;
 		}
 
 		// Game screen
@@ -369,10 +370,10 @@ public class StateInGame extends BasicGameState {
 	 */
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
 		if(!container.hasFocus()) {
-			GameKeySlick.gamekey[0].clear();
-			GameKeySlick.gamekey[1].clear();
-			if(NullpoMinoSlick.alternateFPSTiming) NullpoMinoSlick.alternateFPSSleep();
-			return;
+			//GameKeySlick.gamekey[0].clear();
+			//GameKeySlick.gamekey[1].clear();
+			//if(NullpoMinoSlick.alternateFPSTiming) NullpoMinoSlick.alternateFPSSleep();
+			//return;
 		}
 
 		// TTF font

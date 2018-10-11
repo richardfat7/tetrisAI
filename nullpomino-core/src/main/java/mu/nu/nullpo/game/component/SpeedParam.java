@@ -79,11 +79,16 @@ public class SpeedParam implements Serializable {
 	public void reset() {
 		gravity = 4;
 		denominator = 256;
-		are = 24;
-		areLine = 24;
-		lineDelay = 40;
-		lockDelay = 30;
-		das = 14;
+		//are = 24;
+		are = 0;
+		//areLine = 24;
+		areLine = 0;
+		lineDelay = 0;
+		lockDelay = 10;
+		//lineDelay = 40;
+		//lockDelay = 30;
+		//das = 14;
+		das = 7;
 	}
 
 	/**

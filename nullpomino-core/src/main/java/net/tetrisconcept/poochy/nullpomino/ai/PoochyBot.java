@@ -21,10 +21,10 @@ import org.apache.log4j.Logger;
 public class PoochyBot extends DummyAI implements Runnable {
 	/** Log */
 	static Logger log = Logger.getLogger(PoochyBot.class);
-
+	
 	/** After that I was groundedX-coordinate */
 	public int bestXSub;
-
+	
 	/** After that I was groundedY-coordinate */
 	public int bestYSub;
 
@@ -1305,6 +1305,7 @@ public class PoochyBot extends DummyAI implements Runnable {
 	 * @param depth Compromise level (ranges from 0 through getMaxThinkDepth-1)
 	 * @return Evaluation score
 	 */
+	
 	public int thinkMain(int x, int y, int rt, int rtOld, Field fld, Piece piece, int depth) {
 		int pts = 0;
 
