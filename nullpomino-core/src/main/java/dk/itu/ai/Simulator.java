@@ -32,7 +32,7 @@ public class Simulator {
 	private static final int RUN_ESP = 10;
 	
 	// Each round run for this amount of simulation and then save Qtable
-	private static final int RUN_STEP = 20000;
+	private static final int RUN_STEP = 100;
 
 	public static void main(String[] args) {
 		
@@ -52,7 +52,7 @@ public class Simulator {
 		
 		// NOTE(oliver): For other AIs, look inside src/mu/nu/nullpo/game/subsystem/ai, or src/dk/itu/ai
 		DummyAI ai = 
-			new mu.nu.nullpo.game.subsystem.ai.BasePvPAI();
+			new mu.nu.nullpo.game.subsystem.ai.PvPAI();
 		
 		
 		// Actual simulation.
@@ -240,7 +240,7 @@ public class Simulator {
 			log.info(String.format("-------- Simulation %d of %d --------", i, count));
 			runSimulation();
 		}
-		gameEngine.ai.shutdown(gameEngine, 0);
+		//gameEngine.ai.shutdown(gameEngine, 0);
 	}
 
 	/**
@@ -269,11 +269,11 @@ public class Simulator {
 			log.info("Now:\t" + i);
 			log.info("Total line cleared:\t" + totalLines);
 			log.info("Line per game:\t" + String.valueOf((double)(totalLines) / (i + 1)));
-			if (i % step == 0) {
-				PyAI pyai = (PyAI) gameEngine.ai;
-				pyai.invoke("sys.getsizeof(ai.qtable)");
-				pyai.invoke("ai.saveQTable()");
-			}
+//			if (i % step == 0) {
+//				PyAI pyai = (PyAI) gameEngine.ai;
+//				pyai.invoke("sys.getsizeof(ai.qtable)");
+//				pyai.invoke("ai.saveQTable()");
+//			}
 		}
 		
 		log.info("-------- COMPLETE --------");
