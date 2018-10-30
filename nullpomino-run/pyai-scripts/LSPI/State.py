@@ -90,6 +90,37 @@ class State:
 					
 		self.nextPiece = self.randomPiece()
 	#}
+	
+	def saveField(self, field):
+		for c in range(self.COLS):
+			heightest = 0
+			for r in range(self.ROWS):
+				try:
+					try:
+						rr = (self.ROWS - r - 2)
+						if rr > 0:
+							tmp = field[(self.ROWS - r - 2)][c]
+					except:
+						tmp = 0
+					self.field[r][c] = tmp
+					if tmp == 1:
+						heightest = max(r + 1, heightest)
+				except:
+					pass
+			self.top[c] = heightest
+		'''
+		print(self.top);
+		print("SELFFIELD")
+		for r in range(self.ROWS):
+			for c in range(self.COLS):
+				print("{:>5}".format(self.field[r][c]), end="")
+			print()
+		print("FIELD")
+		for r in range(len(field)):
+			for c in range(len(field[r])):
+				print("{:>5}".format(field[r][c]), end="")
+			print()
+		'''
 
 	def getField(self):
 		return self.field

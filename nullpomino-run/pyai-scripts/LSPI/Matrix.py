@@ -33,7 +33,7 @@ class Matrix:
 			m[r][i] = factor * m[r][i]
 		return m
 	def addMultiple(self,m,r1,r2,factor):
-		for i in range(m[r1]):
+		for i in range(len(m[r1])):
 			m[r1][i] = m[r1][i] + factor * m[r2][i]
 		return m
 	
@@ -73,37 +73,37 @@ class Matrix:
 		for col in range(len(l)):
 			nonZero = self.findFirstNonZero(l,col)
 			if nonZero < 0:
-				print(col+" FULL EMPTY COLUMN")
-				return None
+				print(col," FULL EMPTY COLUMN")
+				return (l, result, None)
 			l = self.swapRow(l,col,nonZero)
 			result = self.swapRow(result,col,nonZero)
-			f = 1 / l[col][col]
+			f = float(1) / l[col][col]
 			l = self.multiplyRow(l,col,f)
 			result = self.multiplyRow(result,col,f)
 			for row in range(col+1,len(l)):
 				if l[row][col] != 0:
-					e = -1 * l[row][col]
+					e = float(-1) * l[row][col]
 					l = self.addMultiple(l,row,col,e)
 					result = self.addMultiple(result,row,col,e)
-		for col in reversed(range(len(l)-1)):
-			for row in reversed(range(col-1)):
+		for col in reversed(range(len(l))):
+			for row in reversed(range(col)):
 				if l[row][col] != 0:
-					e = -1 * l[row][col]
+					e = float(-1) * l[row][col]
 					l = self.addMultiple(l,row,col,e)
 					result = self.addMultiple(result,row,col,e)
-		return result
+		return (l, result, result)
 
 	def product(self,a,b,result):
 		if len(a[0]) != len(b):
-			return None
+			return (result, None)
 		elif (not (len(result) == len(a) and len(result[0]) == len(b[0]))):
-			return None
+			return (result, None)
 		for i in range(len(result)):
 			for j in range(len(result[0])):
 				result[i][j] = 0
 				for k in range(len(a[0])):
 					result[i][j] += a[i][k] * b[k][j]
-		return result
+		return (result, result)
 	
 	def printField(self,field):
 		for i in range(field):

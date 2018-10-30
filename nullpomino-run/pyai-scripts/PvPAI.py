@@ -3,13 +3,16 @@ from LSPI.PlayerSkeleton import PlayerSkeleton
 from LSPI.State import State
 
 from mu.nu.nullpo.game.play import GameEngine
-from mu.nu.nullpo.game.component import Controller, Field, Statistics
+from mu.nu.nullpo.game.component import Controller, Field, Statistics, Block
 from mu.nu.nullpo.game.event import EventReceiver
 from mu.nu.nullpo.util import GeneralUtil
 
 from java.lang import Math, String
 
+import pickle
+
 DEBUG = False
+TRAIN = False
 
 class PvPAI(PyAI):
     def __init__(self, name):
@@ -42,7 +45,11 @@ class PvPAI(PyAI):
         self.forceHold = False
     
     def init(self, engine, playerID):
+        self.loadWeight();
         self.player = PlayerSkeleton()
+        self.player.learns = TRAIN
+        if len(self.weights) > 0:
+            self.player.getBasisFunctions().weight = self.weights
         self.state = State()
         # init value
         self.move = 0
@@ -67,8 +74,21 @@ class PvPAI(PyAI):
         self.gEngine = None
         self.gManager = None
         self.thinkDelay = None
+        self.height = 20
+        self.width = 10
     
     def newPiece(self, engine, playerID):
+        # Transform filed into State field representation
+        self.height = engine.fieldHeight
+        self.width = engine.fieldWidth
+        fld = engine.field
+        transformed_fld = [[0 for _ in range(self.width)] for _ in range(self.height)]
+        for c in range(self.width):
+            for r in range(self.height):
+                transformed_fld[r][c] = 0 if fld.getBlockEmpty(c, r) else 1
+        self.state.saveField(transformed_fld)
+        
+        
         self.nowid = engine.nowPieceObject.id
         self.state.nextPiece = self.nullpomino2lspi[self.nowid]
         if DEBUG:
@@ -89,7 +109,10 @@ class PvPAI(PyAI):
 
         # simulate inside AI
         self.state.makeMove(self.move)
-
+        if TRAIN:
+            #self.player.getBasisFunctions().computeWeights()
+            #print(self.player.bs.weight)
+            pass
         if DEBUG:
             # print field
             self.player.printField(self.state.getField())
@@ -211,9 +234,30 @@ class PvPAI(PyAI):
             ctrl.setButtonBit(0)
     
     def shutdown(self, engine, playerID):
+        if TRAIN:
+            print(self.player.getBasisFunctions().weight)
+            self.player.getBasisFunctions().computeWeights()
+            print(self.player.getBasisFunctions().weight)
+            #print(self.player.bs.weight)
+            self.saveWeight();
         pass
         
     def renderHint(self, engine, playerID):
         pass
+    
+    def saveWeight(self):
+        print("SAVE WEIGHTS")
+        print(self.player.getBasisFunctions().weight)
+        with open('weights.pkl', 'wb') as f:
+            pickle.dump(self.player.getBasisFunctions().weight, f)
+    
+    def loadWeight(self):
+        print("LOAD WEIGHTS")
+        try:
+            with open('weights.pkl', 'rb') as f:
+                self.weights = pickle.load(f)
+        except IOError:
+            self.weights = []
+        print(self.weights)
 
 exportAI = PvPAI

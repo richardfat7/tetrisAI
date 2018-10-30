@@ -1,4 +1,7 @@
 import sys
+import copy
+import math
+import numpy as np
 
 from LSPI.Matrix import Matrix
 from LSPI.State import State
@@ -51,38 +54,39 @@ class BasisFunction:
 		# reward = DIFF_ROWS_COMPLETED
 
 		self.A = [[0 for _ in range(self.FEATURE_COUNT)] for _ in range(self.FEATURE_COUNT)]
-		self.b = [[0 for _ in range(2)] for _ in range(self.FEATURE_COUNT)]
+		self.b = [[0 for _ in range(1)] for _ in range(self.FEATURE_COUNT)]
 		self.weight = [0 for _ in range(self.FEATURE_COUNT)]
-
+		
 		#{
 		self.weight = [
-				-0.180164448251231,
-				-0.4000820857296077,
-				24.77849828060256,
-				0.2064192581442733,
-				0.045032898990512216,
-				0.021320544290795714,
-				0.08917677230797055,
-				0.00819042152617841,
-				-0.03390773883019901,
-				23.781352321845173,
-				-0.010694297443763184,
-				-2.3906661321409253,
-				-0.08863636063644799,
-				-0.005240305848723416,
-				-0.1524174444288417,
+				-0.24709732954087324,
+		        -0.2873809746557061,
+		        25.699053119960034,
+		        0.28493232436440696,
+		        0.02257684883938526,
+		        0.01403467816119542,
+		        0.08878080563702503,
+		        -0.018214277844956717,
+		        -0.035755645685708604,
+		        24.717233494834087,
+		        -0.012510205699177684,
+		        -2.4844780406241944,
+		        -0.06756929870474297,
+		        -0.003777507700488218,
+		        -0.18074262648816622
 	#			-6.525668167122544E-4,
 	#			-8.272234730529223E-4
-			]
-		#}
+				]
+		
+		#self.weight = [0 for _ in range(15)]
 		self.features = [0 for _ in range(self.FEATURE_COUNT)]
 		self.past     = [0 for _ in range(self.FEATURE_COUNT)]
 		
 		self.tmpA = [[0 for _ in range(self.FEATURE_COUNT)] for _ in range(self.FEATURE_COUNT)]
-		self.mWeight = [[0 for _ in range(2)] for _ in range(self.FEATURE_COUNT)]
-		self.mFeatures = [[0 for _ in range(2)] for _ in range(self.FEATURE_COUNT)]
-		self.mFutureFeatures = [[0 for _ in range(self.FEATURE_COUNT)] for _ in range(2)]
-		self.mRowFeatures = [[0 for _ in range(self.FEATURE_COUNT)] for _ in range(2)]
+		self.mWeight = [[0 for _ in range(1)] for _ in range(self.FEATURE_COUNT)]
+		self.mFeatures = [[0 for _ in range(1)] for _ in range(self.FEATURE_COUNT)]
+		self.mFutureFeatures = [[0 for _ in range(self.FEATURE_COUNT)] for _ in range(1)]
+		self.mRowFeatures = [[0 for _ in range(self.FEATURE_COUNT)] for _ in range(1)]
 		self.changeToA = [[0 for _ in range(self.FEATURE_COUNT)] for _ in range(self.FEATURE_COUNT)]
 
 	# Function to get feature array for current state.
@@ -123,7 +127,7 @@ class BasisFunction:
 				curIsZero = (field[i][j] == 0)
 				prevColIsZero = (field[i][j-1] == 0)
 				nextRowIsZero = (field[i+1][j] == 0)
-				if j > 0 and curIsZero != prevColIsZero:
+				if j > 0 and (curIsZero != prevColIsZero):
 					rowTrans += 1
 				if curIsZero != nextRowIsZero:
 					colTrans += 1
@@ -131,6 +135,7 @@ class BasisFunction:
 					coveredGaps += 1
 				if not curIsZero:
 					totalBlocks += 1
+				# This may wrong sin we hardcode all piece to 0/1
 				if field[i][j] == turnNo:
 					currentPieceCells += 1
 #		vals[self.ERODED_PIECE_CELLS] = 4 - currentPieceCells
@@ -150,15 +155,15 @@ class BasisFunction:
 		field = s.getField()
 		top = s.getTop()
 		c = s.COLS - 1
-		maxWellDepth = 0
-		totalWellDepth = 0
-		totalWeightedWellDepth = 0
-		maxHeight = 0
-		minHeight = sys.maxsize
-		total = 0
-		totalHeightSquared = 0
-		diffTotal = 0
-		squaredDiffTotal = 0
+		maxWellDepth = float(0)
+		totalWellDepth = float(0)
+		totalWeightedWellDepth = float(0)
+		maxHeight = float(0)
+		minHeight = float(sys.maxsize)
+		total = float(0)
+		totalHeightSquared = float(0)
+		diffTotal = float(0)
+		squaredDiffTotal = float(0)
 		for j in range(s.COLS): #by column
 			total += top[j]
 			totalHeightSquared += top[j] ** 2
@@ -177,18 +182,19 @@ class BasisFunction:
 						wellDepth = min(top[j-1],top[j+1]) - top[j]
 				maxWellDepth 			= max(wellDepth,maxWellDepth)
 				totalWellDepth 			+= maxWellDepth
-				totalWeightedWellDepth 	+= (wellDepth * (wellDepth + 1)) / 2
+				totalWeightedWellDepth 	+= (wellDepth * (wellDepth + 1)) / float(2)
 		vals = self.cellOperations(top,field,vals,currentTurn)
 		vals[self.MAX_WELL_DEPTH] = maxWellDepth
 		vals[self.TOTAL_WELL_DEPTH] = totalWellDepth
 		vals[self.WEIGHTED_WELL_DEPTH] = totalWeightedWellDepth
-		vals[self.DIFF_AVG_HEIGHT] = total / s.COLS
+		vals[self.DIFF_AVG_HEIGHT] = float(total) / s.COLS
 		vals[self.SUM_ADJ_DIFF] = diffTotal
 		#vals[self.SUM_ADJ_DIFF_SQUARED] = squaredDiffTotal
 		vals[self.MAX_MIN_DIFF] = maxHeight - minHeight
 		vals[self.MAX_HEIGHT] = maxHeight
-		vals[self.COL_STD_DEV] = (totalHeightSquared - total * total / s.COLS) / (s.COLS - 1)
+		vals[self.COL_STD_DEV] = (totalHeightSquared - float(total) * float(total) / s.COLS) / (s.COLS - 1)
 		#print(colTrans)
+		#print(vals)
 		return vals
 
 	# Matrix update function. See above for descriptions.
@@ -197,6 +203,7 @@ class BasisFunction:
 	# @param features
 	# @param futureFeatures
 	def updateMatrices(self,s,features,futureFeatures):
+		#print("UPUPUPUPUUPUPUP")
 		#preprocessing
 		m = Matrix()
 		self.mFeatures = m.arrayToCol(features,self.mFeatures)
@@ -204,10 +211,14 @@ class BasisFunction:
 		self.mRowFeatures = m.arrayToRow(features,self.mRowFeatures)
 		self.mFutureFeatures = m.multiply(-1 * self.DISCOUNT,self.mFutureFeatures)
 		self.mRowFeatures = m.sum(self.mRowFeatures,self.mFutureFeatures)
-		self.changeToA = m.product(self.mFeatures,self.mRowFeatures,self.changeToA)
+		(_, self.changeToA) = m.product(self.mFeatures,self.mRowFeatures,self.changeToA)
 		self.A = m.sum(self.A,self.changeToA)
 		self.mFeatures = m.multiply(features[self.DIFF_ROWS_COMPLETED],self.mFeatures)
 		self.b = m.sum(self.b,self.mFeatures)
+		#print("self.A")
+		#print(np.array(self.A))
+		#print("self.deltaA")
+		#print(np.array(self.changeToA))
 
 	# The computation of the weights can be separate from the updating of matrix A & b.
 	# 
@@ -216,12 +227,31 @@ class BasisFunction:
 	# The way I'm doing this in the back-end is running the Gauss-Jordan Elimination algo alongside the b matrix.
 	# This saves computing inverse of A and then multiplying it with b.
 	def computeWeights(self):
-		if Matrix.premultiplyInverse(self.A,self.b,self.mWeight,self.tmpA) != None:
-			self.weight = Matrix.colToArray(self.mWeight,self.weight)
+		try:
+			ret = np.asarray(np.matmul(np.linalg.inv(self.A), self.b).reshape(-1))
+			self.weight = ret
+		except np.linalg.linalg.LinAlgError:
+			print("have row/col all zero")
+		return
+		print("computeWeights")
+		m = Matrix()
+		#oldWeight = copy.deepcopy(self.weight)
+		#oldmWeight = copy.deepcopy(self.mWeight)
+		print(self.A)
+		print(self.b)
+		(self.A, self.mWeight, ret) = m.premultiplyInverse(self.A,self.b,self.mWeight,self.tmpA)
+		if ret != None:
+			self.weight = m.colToArray(self.mWeight,self.weight)
+			#print("MW")
+			#print(self.weight)
+			#print(self.mWeight)
+			#if self.mWeight[0] == 0 or self.mWeight[0]:
+			#	print(oldWeight)
+			#	print(oldmWeight)
 			#printField(mWeight)
 
 	def printField(self,field):
 		for i in range(len(field)):
-			for j in range(len(field[0])):
+			for j in range(len(field[i])):
 				print(" "+str(field[i][j]),end='')
 			print()

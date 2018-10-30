@@ -77,6 +77,6 @@ class PlayerSkeleton:
 
 	def printField(self,field):
 		for i in range(len(field)):
-			for j in range(len(field[0])):
-				print('{:>10}'.format(field[19-i][j]),end='')
+			for j in range(len(field[i])):
+				print('{:>10}'.format(field[i][j]),end='')
 			print()

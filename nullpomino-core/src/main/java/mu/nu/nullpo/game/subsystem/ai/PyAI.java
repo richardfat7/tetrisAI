@@ -31,6 +31,7 @@ package mu.nu.nullpo.game.subsystem.ai;
 import org.apache.log4j.Logger;
 
 import jep.Jep;
+import jep.JepConfig;
 import jep.JepException;
 import mu.nu.nullpo.game.component.Controller;
 import mu.nu.nullpo.game.play.GameEngine;
@@ -94,7 +95,7 @@ public abstract class PyAI extends DummyAI implements AIPlayer {
 	public void initJEP() {
 		if (jep == null)
 			try {
-				jep = new Jep();
+				jep = new Jep(new JepConfig().addSharedModules("numpy"));
 				jep.eval("import sys");
 				jep.eval("sys.path.append('pyai-scripts')");
 			    jep.runScript(scriptPath);

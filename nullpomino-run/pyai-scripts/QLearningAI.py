@@ -3,7 +3,6 @@ import pickle
 import sys
 from random import random, choice
 import time
-import numpy
 
 from mu.nu.nullpo.game.play import GameEngine
 from mu.nu.nullpo.game.component import Controller, Field, Statistics
@@ -13,7 +12,7 @@ from mu.nu.nullpo.util import GeneralUtil
 from java.lang import Math, String
 
 IS_TRAINING = True
-IS_DEBUG = True
+IS_DEBUG = False
 
 def argmax(adict):
     if IS_DEBUG:
@@ -39,7 +38,7 @@ class BasePvPAI(PyAI):
         self.pieceSinceStart = 0
         
         self.qtable = None
-        #self.loadQTable()
+        self.loadQTable()
         if IS_DEBUG:
             print("INITIALIZEING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     
@@ -231,8 +230,7 @@ class BasePvPAI(PyAI):
         pass
     
     def shutdown(self, engine, playerID):
-        #self.saveQTable()
-        pass
+        self.saveQTable()
         
     def renderHint(self, engine, playerID):
         pass
