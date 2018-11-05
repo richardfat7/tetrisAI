@@ -1,4 +1,5 @@
 mu.nu.nullpo.game.subsystem.ai.BasicAI
+edu.cuhk.cse.fyp.tetrisai.lspi.LSPIAI
 mu.nu.nullpo.game.subsystem.ai.PvPAI
 mu.nu.nullpo.game.subsystem.ai.BasePvPAI
 mu.nu.nullpo.game.subsystem.ai.TSpinAI
