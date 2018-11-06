@@ -29,55 +29,38 @@ public class TFrame extends JFrame implements KeyListener{
 		this.s = s;
 		s.label = label;
 		setResizable(false);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);            // closes all windows when this is closed
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);			// closes all windows when this is closed
 		setTitle("Tetris BKW");
 		setContentPane(label.draw);
 		pack();
 		label.BORDER = .05;
 		label.setXscale(0, State.COLS);
 		label.setYscale(0, State.ROWS+5);
-		this.addKeyListener(this);  //may be unnecessary (not certain)
+		this.addKeyListener(this);	//may be unnecessary (not certain)
 		setVisible(true);
 	}
-	
+
 	//constructor with title
 	public TFrame (State s, String title){
 		this.s = s;
 		s.label = label;
 		setResizable(false);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);            // closes all windows when this is closed
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);			// closes all windows when this is closed
 		setTitle(title);
 		setContentPane(label.draw);
 		pack();
 		label.BORDER = .05;
 		label.setXscale(0, State.COLS);
 		label.setYscale(0, State.ROWS+5);
-		this.addKeyListener(this);  //may be unnecessary (not certain)
+		this.addKeyListener(this);	//may be unnecessary (not certain)
 		setVisible(true);
 	}
-	
+
 	//switches which state is attached to this TFrame
 	public void bindState(State s) {
-		if(s!= null)	s.label = null;
+		if(s!= null) s.label = null;
 		this.s = s;
 		s.label = label;
-	}
-	
-	///
-	/// ADDED BY DON (AKA Pimp Masta) 1/22/09
-	///
-	public TFrame (){
-		s.label = label;
-		setResizable(false);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);            // closes all windows when this is closed
-		setTitle("Eric Whitman's Tetris Simulator");
-		setContentPane(label.draw);
-		pack();
-		label.BORDER = .05;
-		label.setXscale(0, State.COLS);
-		label.setYscale(0, State.ROWS+5);
-		this.addKeyListener(this);  //may be unnecessary (not certain)
-		setVisible(true);
 	}
 
 	public void keyPressed(KeyEvent e) {
@@ -110,7 +93,6 @@ public class TFrame extends JFrame implements KeyListener{
 						if(orient >= State.pOrients[s.nextPiece])	orient = 0;
 						if(slot > State.COLS-State.pWidth[s.nextPiece][orient])
 							slot = State.COLS-State.pWidth[s.nextPiece][orient];
-						
 						s.draw();
 						if(mode == NONE)	{
 							label.text(State.COLS/2.0, State.ROWS/2.0, "You Lose");
@@ -128,10 +110,6 @@ public class TFrame extends JFrame implements KeyListener{
 				System.out.println("unknown mode");
 				break;
 		}
-		
-		
-		
-		
 	}
 
 
@@ -140,25 +118,23 @@ public class TFrame extends JFrame implements KeyListener{
 
 
 	public void keyTyped(KeyEvent e) {
-
 	}
-	
-    public void save(String filename) {
-        File file = new File(filename);
-        String suffix = filename.substring(filename.lastIndexOf('.') + 1);
 
+	public void save(String filename) {
+		File file = new File(filename);
+		String suffix = filename.substring(filename.lastIndexOf('.') + 1);
 
-        BufferedImage bImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
-        Graphics2D graphic = (Graphics2D)bImage.getGraphics();
-        paint(graphic);
-        graphic.drawImage(bImage, 0, 0, null);
-//         png files
-        if (suffix.toLowerCase().equals("png")) {
-            try { ImageIO.write(bImage, suffix, file); }
-            catch (IOException e) { e.printStackTrace(); }
-        }
-        else System.out.println("unknown extension");
-    }
+		BufferedImage bImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+		Graphics2D graphic = (Graphics2D)bImage.getGraphics();
+		paint(graphic);
+		graphic.drawImage(bImage, 0, 0, null);
+//			png files
+		if (suffix.toLowerCase().equals("png")) {
+			try { ImageIO.write(bImage, suffix, file); }
+			catch (IOException e) { e.printStackTrace(); }
+		}
+		else System.out.println("unknown extension");
+	}
 	
 	public static void main(String[] args) {
 		State s = new State();
@@ -166,6 +142,5 @@ public class TFrame extends JFrame implements KeyListener{
 		s.draw();
 		s.drawNext(0,0);
 		//t.save("picture.png");
-		
 	}
 }

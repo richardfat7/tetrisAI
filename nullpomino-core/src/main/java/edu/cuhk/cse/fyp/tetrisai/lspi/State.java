@@ -7,7 +7,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class State {
 	public static final int COLS = 10;
-	public static final int ROWS = 21;
+	public static final int ROWS = 23;
 	public static final int N_PIECES = 7;
 
 	
@@ -25,7 +25,7 @@ public class State {
 	private int cleared = 0;
 	
 	//each square in the grid - int means empty - other values mean the turn it was placed
-	protected int[][] field = new int[ROWS][COLS];
+	private int[][] field = new int[ROWS][COLS];
 	//top row+1 of each column
 	//0 means empty
 	protected int[] top = new int[COLS];
@@ -229,12 +229,10 @@ public class State {
 	// add lines stack to field
 	private boolean addLines() {
 		// check if game end
-		for (int i = ROWS-2; i > ROWS-2-linesStack; i--) {
-			for (int j = 0; j < COLS; j++) {
-				if (field[i][j] != 0) {
-					lost = true;
-					return false;
-				}
+		for (int c = 0; c < COLS; c++) {
+			if (top[c] + linesStack >= ROWS) {
+				lost = true;
+				return false;
 			}
 		}
 		Random rand = new Random();
@@ -323,7 +321,7 @@ public class State {
 		}
 		
 		//check if game ended
-		if(height+pHeight[nextPiece][orient] >= ROWS) {
+		if(height+pHeight[nextPiece][orient] >= 20) {
 			lost = true;
 			return false;
 		}
@@ -331,7 +329,6 @@ public class State {
 		
 		//for each column in the piece - fill in the appropriate blocks
 		for(int i = 0; i < pWidth[nextPiece][orient]; i++) {
-			
 			//from bottom to top of brick
 			for(int h = height+pBottom[nextPiece][orient][i]; h < height+pTop[nextPiece][orient][i]; h++) {
 				field[h][i+slot] = turn;
@@ -344,7 +341,6 @@ public class State {
 		}
 		
 		int rowsCleared = 0;
-		
 		//check for full rows - starting at the top
 		for(int r = height+pHeight[nextPiece][orient]-1; r >= height; r--) {
 			//check all columns in the row
@@ -361,7 +357,6 @@ public class State {
 				cleared++;
 				//for each column
 				for(int c = 0; c < COLS; c++) {
-
 					//slide down all bricks
 					for(int i = r; i < top[c]; i++) {
 						field[i][c] = field[i+1][c];
@@ -387,7 +382,6 @@ public class State {
 		//pick a new piece
 		if (doublePlayer == false)
 			nextPiece = randomPiece();
-		
 
 		
 		return valid;
@@ -400,10 +394,9 @@ public class State {
 		label.line(0, 0, 0, ROWS+5);
 		label.line(COLS, 0, COLS, ROWS+5);
 		label.line(0, 0, COLS, 0);
-		label.line(0, ROWS-1, COLS, ROWS-1);
+		label.line(0, ROWS-3, COLS, ROWS-3);
 		
 		//show bricks
-				
 		for(int c = 0; c < COLS; c++) {
 			for(int r = 0; r < top[c]; r++) {
 				if(field[r][c] != 0) {
@@ -419,12 +412,10 @@ public class State {
 		}
 		
 		label.show();
-		
-		
 	}
 	
-	public static final Color brickCol = Color.gray; 
-	
+	public static final Color brickCol = Color.gray;
+
 	private void drawBrick(int c, int r) {
 		label.filledRectangleLL(c, r, 1, 1, brickCol);
 		label.rectangleLL(c, r, 1, 1);

@@ -1,6 +1,5 @@
 package edu.cuhk.cse.fyp.tetrisai.lspi;
 
-
 public class BasisFunction {
 
 	// discount value, part of the LRQ algo.

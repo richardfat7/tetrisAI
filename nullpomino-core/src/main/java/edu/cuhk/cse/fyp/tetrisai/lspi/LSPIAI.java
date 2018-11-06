@@ -344,7 +344,7 @@ public class LSPIAI extends DummyAI implements Runnable {
 					} catch(Exception e) {
 						tmp = 0;
 					}
-					state.field[r][c] = tmp;
+					state.getField()[r][c] = tmp;
 					if (tmp == 1)
 						heightest = Math.max(r + 1, heightest);
 				} catch(Exception e) {

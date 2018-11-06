@@ -12,8 +12,10 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Trainer {
 	private static int ROUNDS = 30;
 	private static int SPIN_STEP_DELAY = 2500;
+	private static Writer out = null;
 	
 	public static void main(String[] args) throws IOException {
+		if(out == null) out = new PrintWriter(new File("weight.log"));
 		PlayerSkeleton p1 = new PlayerSkeleton();
 		p1.learns = true;
 		PlayerSkeleton p2 = new PlayerSkeleton();
@@ -25,6 +27,7 @@ public class Trainer {
 		TwoPlayerBasisFunction bf2 = p2.getTwoPlayerBasisFunctions();
 		String score = "";
 		int consecutive_all_wins = 0;
+		int cnt = 0;
 
 		// keep on training!
 		while(true) {
@@ -61,7 +64,7 @@ public class Trainer {
 			System.out.println(p2wins);
 			System.out.print("Draw: ");
 			System.out.println(draw);
-			if(p1wins >= ROUNDS*9/10) consecutive_all_wins++;
+			if(p1wins > ROUNDS*9/10) consecutive_all_wins++;
 			else consecutive_all_wins = 0;
 			if(consecutive_all_wins == 5) {
 				// copy weight
@@ -76,6 +79,19 @@ public class Trainer {
 			//	weights[i] = 0.1 * weights[i] + 0.9 * defWeights[i];
 			//	weights[i] = 0.001 * (weights[i]*(0.5 - Math.random()));
 			//}
+			
+			cnt++;
+			if(cnt == 100) {
+				System.out.println("Write weight to log file");
+				out.write("Weight:\n");
+				for(int i = 0; i < bf1.weight.length; i++) {
+					out.write(Double.toString(bf1.weight[i]));
+					out.write('\n');
+				}
+				out.write('\n');
+				out.flush();
+				cnt = 0;
+			}
 		}
 	}
 	
