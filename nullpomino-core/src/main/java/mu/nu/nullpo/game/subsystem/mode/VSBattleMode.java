@@ -104,6 +104,25 @@ public class VSBattleMode extends AbstractMode {
 	/** Had sentgarbage blockOfcount */
 	private int[] garbageSent;
 
+	public int[] getGarbageSent() {
+		return garbageSent;
+	}
+
+	public void setGarbageSent(int[] garbageSent) {
+		this.garbageSent = garbageSent;
+	}
+
+	/** this round sent garbage blockOfcount */
+	private int[] curGarbageSent;
+
+	public int[] getCurGarbageSent() {
+		return curGarbageSent;
+	}
+
+	public void setCurGarbageSent(int[] curGarbageSent) {
+		this.curGarbageSent = curGarbageSent;
+	}
+
 	/** Last garbage hole position */
 	private int[] lastHole;
 
@@ -235,6 +254,7 @@ public class VSBattleMode extends AbstractMode {
 		garbageBlocking = new boolean[MAX_PLAYERS];
 		garbage = new int[MAX_PLAYERS];
 		garbageSent = new int[MAX_PLAYERS];
+		curGarbageSent = new int[MAX_PLAYERS];
 		lastHole = new int[MAX_PLAYERS];
 		scgettime = new int[MAX_PLAYERS];
 		lastevent = new int[MAX_PLAYERS];
@@ -444,6 +464,7 @@ public class VSBattleMode extends AbstractMode {
 
 		garbage[playerID] = 0;
 		garbageSent[playerID] = 0;
+		curGarbageSent[playerID] = 0;
 		lastHole[playerID] = -1;
 		scgettime[playerID] = 0;
 		lastevent[playerID] = EVENT_NONE;
@@ -1067,6 +1088,9 @@ public class VSBattleMode extends AbstractMode {
 			garbageSent[playerID] += pts;
 			if(b2bType[playerID] == 2) garbageSent[playerID] += ptsB2B;
 
+			// Save Garbage Sent of this round
+			curGarbageSent[playerID] = pts + ptsB2B;
+			
 			// Offset
 			garbage[playerID] = getTotalGarbageLines(playerID);
 			if((pts > 0) && (garbage[playerID] > 0) && (garbageCounter[playerID])) {
@@ -1082,7 +1106,8 @@ public class VSBattleMode extends AbstractMode {
 					}
 				}
 			}
-
+			
+			
 			//  Attack
 			if(pts > 0) {
 				garbageEntries[enemyID].add(new GarbageEntry(pts, playerID));

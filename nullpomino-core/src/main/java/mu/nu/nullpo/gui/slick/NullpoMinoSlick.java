@@ -164,10 +164,6 @@ public class NullpoMinoSlick extends StateBasedGame {
 	/** Mode folder select */
 	public static StateSelectModeFolder stateSelectModeFolder;
 	
-	/** NOTE(oliver): This is our training states! */
-	public static dk.itu.ai.StateSelectTraining stateSelectTraining;
-	public static dk.itu.ai.StateInTraining stateInTraining;
-	
 	/** Timing of alternate FPS sleep (false=render true=update) */
 	public static boolean alternateFPSTiming;
 
@@ -728,9 +724,6 @@ public class NullpoMinoSlick extends StateBasedGame {
 		stateConfigKeyboardReset = new StateConfigKeyboardReset();
 		stateSelectRuleFromList = new StateSelectRuleFromList();
 		stateSelectModeFolder = new StateSelectModeFolder();
-		// NOTE(oliver): Preparing our training state here!
-		stateSelectTraining = new dk.itu.ai.StateSelectTraining();
-		stateInTraining = new dk.itu.ai.StateInTraining();
 
 		addState(stateLoading);
 		addState(stateTitle);
@@ -752,9 +745,6 @@ public class NullpoMinoSlick extends StateBasedGame {
 		addState(stateConfigKeyboardReset);
 		addState(stateSelectRuleFromList);
 		addState(stateSelectModeFolder);
-		// NOTE(oliver): Adding our training state here!
-		addState(stateSelectTraining);
-		addState(stateInTraining);
 	}
 
 	/**

@@ -71,6 +71,8 @@ public class TwoPlayerBasisFunction {
 //	final private static int OPPO_DIFF_CONSECUTIVE_HOLES	= count++;	//(ESTR FYP)
 	final private static int OPPO_LINES_STACK				= count++;	//(ESTR FYP) record line stack
 //	final private static int OPPO_DIFF_LINES_STACK			= count++;	//(ESTR FYP)
+
+	final private static int OPPO_DIE						= count++;	//(ESTR FYP)
 	final public static int FEATURE_COUNT = count;
 
 
@@ -88,40 +90,81 @@ public class TwoPlayerBasisFunction {
 	double[][] b = new double[FEATURE_COUNT][1]; 
 	double[] weight = new double[FEATURE_COUNT];
 	
+	{
+		for (int i = 0; i < FEATURE_COUNT; i++) {
+			A[i][i] = 0.00001;
+		}
+		
+	}
+	
 
 	{
 		weight = new double[] {
-			-0.298767483199732,
-			-0.013068374260311044,
-			1.2193677870745459,
-			0.019372055659749476,
-			0.3769872998042456,
-			-0.23118421169526604,
-			-0.01569683490065352,
-			0.046724315183192096,
-			-0.02644008100751616,
-			-0.06662759078620209,
-			-0.22700867390189808,
-			-0.004780215454737941,
-			-0.018079475444386595,
-			0.0060072132747883075,
-			-0.27164923972642224,
-			-0.40881646745978495,
-			-0.07673130959791169,
-			-0.2344523257046592,
-			0.01168217140615506,
-			-0.010923161744349607,
-			0.01444945932152964,
-			-0.010412752305144258,
-			0.005503715641622657,
-			-0.006040206823048212,
-			0.01974870384937049,
-			0.006090943317754162,
-			0.003931767360050061,
-			-0.003296147573416934,
-			-0.0021008339266168903,
-			-0.04738240066215527,
-			-5.7873344240324425
+//				-0.0115758253620859,
+//				-0.5804986483244468,
+//				1.3018899422836878,
+//				-0.3068917500166138,
+//				0.016750693596296714,
+//				-0.07136309394577754,
+//				-0.01472646267206169,
+//				0.06623235225583972,
+//				-0.020819846319691387,
+//				-0.027473403573387428,
+//				-0.30406587442931143,
+//				-0.038291477303556545,
+//				0.032387722139835706,
+//				-5.169878117965614E-4,
+//				-0.055184677575014475,
+//				0.11214938218933646,
+//				0.08667816204692765,
+//				-0.319884904186718,
+//				0.03007378761423499,
+//				-0.09239887424947482,
+//				-0.004155640657256579,
+//				0.02301660201490626,
+//				0.006568040692214583,
+//				-0.003031421348971311,
+//				0.03576771027674431,
+//				0.021604294270383975,
+//				-0.009761509004443503,
+//				-0.009630894574110618,
+//				0.013233995420148543,
+//				0.0034694625273483885,
+//				-5.452885735535335,
+//				0.0034684078778213618,
+				-0.0115758253620859,
+				-0.5804986483244468,
+				1.3018899422836878,
+				-0.3068917500166138,
+				0.016750693596296714,
+				-0.07136309394577754,
+				-0.01472646267206169,
+				0.06623235225583972,
+				-0.020819846319691387,
+				-0.027473403573387428,
+				-0.30406587442931143,
+				-0.038291477303556545,
+				0.032387722139835706,
+				-5.169878117965614E-4,
+				-0.055184677575014475,
+				0.11214938218933646,
+				0.08667816204692765,
+				-0.319884904186718,
+				99999,
+				99999,
+				99999,
+				99999,
+				99999,
+				99999,
+				99999,
+				99999,
+				99999,
+				99999,
+				99999,
+				99999,
+				-5.452885735535335,
+				0.0034684078778213618,
+
 		};
 	}
 	
@@ -159,6 +202,7 @@ public class TwoPlayerBasisFunction {
 		//features[OPPO_DIFF_LINES_SENT] = fs2.getLinesSent();
 		features[OPPO_LINES_STACK] = -s2.getLinesStack()-1;
 		//features[OPPO_DIFF_LINES_STACK] = features[OPPO_LINES_STACK] - past[OPPO_LINES_STACK];
+		
 		//compute height features
 		int currentTurn2 = s2.getTurnNumber();
 		int currentPiece2 = s2.getNextPiece();
@@ -175,6 +219,9 @@ public class TwoPlayerBasisFunction {
 		//features[OPPO_CENTER_DEV] = Math.abs(move[State.SLOT] - State.COLS/2.0);
 		//features[OPPO_WEIGHTED_ERODED_PIECE_CELLS] = (fs2.getRowsCleared()- s2.getRowsCleared())*features[OPPO_ERODED_PIECE_CELLS];
 		//features[OPPO_LANDING_HEIGHT] = s2.getTop()[move[State.SLOT]];
+
+		features[OPPO_DIE] = (Math.pow(features[OPPO_MAX_HEIGHT] + s2.getLinesStack(), 2) - Math.pow(features[OPPO_MAX_HEIGHT], 2))
+				           - (Math.pow(features[MAX_HEIGHT] + s1.getLinesStack(), 2) - Math.pow(features[MAX_HEIGHT], 2));
 		return features;
 	}
 
@@ -277,8 +324,11 @@ public class TwoPlayerBasisFunction {
 				}
 				if(full==true) consecutiveHoles++;
 			}
-			if(consecutiveHoles>1&&consecutiveHoles<4) conHoles += consecutiveHoles;
-			else conHoles -= consecutiveHoles;
+//			if(consecutiveHoles>1&&consecutiveHoles<4) conHoles += consecutiveHoles;
+//			else conHoles -= consecutiveHoles;
+
+			if (consecutiveHoles > 0)
+				conHoles = 4 - Math.abs(4 - consecutiveHoles);
 		}
 		cellOperations(top,field,vals,currentTurn);
 		vals[MAX_WELL_DEPTH] = maxWellDepth;
@@ -378,6 +428,7 @@ public class TwoPlayerBasisFunction {
 		Matrix.sum(mRowFeatures, mFutureFeatures);
 		Matrix.product(mFeatures,mRowFeatures,changeToA);
 		Matrix.sum(A,changeToA);
+//		Matrix.multiply(features[OPPO_DIFF_DIE], mFeatures);
 		Matrix.multiply(features[DIFF_LINES_SENT], mFeatures);
 //		Matrix.multiply(features[DIFF_ROWS_COMPLETED], mFeatures);
 		Matrix.sum(b,mFeatures);

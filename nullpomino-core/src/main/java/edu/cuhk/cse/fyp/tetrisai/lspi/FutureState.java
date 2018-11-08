@@ -69,6 +69,15 @@ public class FutureState extends State{
 		linesStack += linesSent;
 	}
 	
+	public void addLineSent(int linesSent) {
+		sent = linesSent;
+		totalSent += linesSent;
+	}
+	
+	public void addLineCleared(int linesCleared) {
+		cleared += linesCleared;
+	}
+	
 	void resetToCurrentState(State s) {
 		int[][] field = s.getField();
 		this.nextPiece = s.getNextPiece();
@@ -155,6 +164,50 @@ public class FutureState extends State{
 			
 			totalSent += sent;
 		}
+	}
+	
+	// calculate lines sent and return result
+	protected int calLinesSentResult(int rowsCleared) {
+		int sent = 0;
+		int totalSent = 0;
+		if (rowsCleared == 0) {
+			combo = 0;
+		} else {
+			// calculate combo
+			if (lastCleared) {
+				if (combo < 2) combo++;
+				else if (combo < 4) combo += 2;
+				else if (combo < 6) combo += 3;
+				else combo += 4;
+				sent += combo;
+			}
+
+			// calculate lines sent
+			if (rowsCleared == 4) {
+				sent += 4;
+				if (b2b) sent += 2;
+				else b2b = true;
+			} else {
+				b2b = false;
+				if (rowsCleared == 2) sent++;
+				else if (rowsCleared == 3) sent += 2;
+			}
+
+			// perfect clear
+			boolean perfectClear = true;
+			for (int i = 0; i < ROWS; i++) {
+				for (int j = 0; j < COLS; j++) {
+					if (field[i][j] != 0) {
+						perfectClear = false;
+						break;
+					}
+				}
+			}
+			if (perfectClear) sent += 10;
+			
+			totalSent += sent;
+		}
+		return sent;
 	}
 	
 	//gives legal moves for 

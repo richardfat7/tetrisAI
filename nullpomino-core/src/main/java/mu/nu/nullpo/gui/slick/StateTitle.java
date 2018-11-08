@@ -178,10 +178,6 @@ public class StateTitle extends DummyMenuChooseState {
 		case 4:
 			container.exit();
 			break;
-		case 5:
-			log.debug("LOG(oliver): Selected TRAIN option");
-			game.enterState(dk.itu.ai.StateSelectTraining.ID);
-			break;
 		}
 
 		return false;

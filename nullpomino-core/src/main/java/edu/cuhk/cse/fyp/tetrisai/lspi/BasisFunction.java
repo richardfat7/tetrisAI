@@ -191,7 +191,8 @@ public class BasisFunction {
 				}
 				if(full==true) consecutiveHoles++;
 			}
-			conHoles = Math.max(conHoles,consecutiveHoles);
+			if (consecutiveHoles > 0)
+				conHoles = 4 - Math.abs(4 - consecutiveHoles);
 		}
 		cellOperations(top,field,vals,currentTurn);
 		vals[MAX_WELL_DEPTH] = maxWellDepth;

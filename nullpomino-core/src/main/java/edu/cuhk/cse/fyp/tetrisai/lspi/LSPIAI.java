@@ -35,6 +35,7 @@ import mu.nu.nullpo.game.component.WallkickResult;
 import mu.nu.nullpo.game.play.GameEngine;
 import mu.nu.nullpo.game.play.GameManager;
 import mu.nu.nullpo.game.subsystem.ai.DummyAI;
+import mu.nu.nullpo.game.subsystem.mode.VSBattleMode;
 
 import org.apache.log4j.Logger;
 
@@ -55,7 +56,7 @@ public class LSPIAI extends DummyAI implements Runnable {
 	public int bestRtSub;
 
 	/** The best moveEvaluation score */
-	public int bestPts;
+	public double bestPts;
 
 	/** Delay the move for changecount */
 	public int delay;
@@ -119,16 +120,30 @@ public class LSPIAI extends DummyAI implements Runnable {
 								  };
 
 	public PlayerSkeleton player;
+
+	public State nowState;
 	
-	public State state;
+	public State oppNowState;
+	
+	public FutureState futureState;
+	
+	public FutureState oppFutureState;
 	
 	public int move;
 	
 	public int nowid;
 	
 	public int height;
+
+	public int hiddenHeight;
 	
 	public int width;
+	
+	public boolean twoPlayerGame = false;
+
+	public double[] lastf;
+	
+	public double[] savedLastf;
 	
 	/*
 	 * AIOfName
@@ -145,9 +160,16 @@ public class LSPIAI extends DummyAI implements Runnable {
 	public void init(GameEngine engine, int playerID) {
 		player = new PlayerSkeleton();
 		player.learns = LSPIAI.TRAIN;
-		state = new State();
+		nowState = new State();
+		oppNowState = new State();
 		move = 0;
 		nowid = 0;
+		
+
+		int no_players = engine.owner.getPlayers();
+		twoPlayerGame = false;
+		if (no_players == 2)
+			twoPlayerGame = true;
 		
 		gEngine = engine;
 		gManager = engine.owner;
@@ -320,8 +342,10 @@ public class LSPIAI extends DummyAI implements Runnable {
 		bestPts = 0;
 		forceHold = false;
 		height = engine.fieldHeight;
+		hiddenHeight = engine.fieldHiddenHeight;
 		width = engine.fieldWidth;
-
+		
+		/*
 		Field fld = engine.field;
         int[][] transformed_fld = new int[height][width];
         for (int c = 0; c < width; c++) {
@@ -338,9 +362,9 @@ public class LSPIAI extends DummyAI implements Runnable {
 				try {
 					tmp = 0;
 					try {
-						rr = (State.ROWS - r - 2);
+						rr = (State.ROWS - r + 1);
 						if (rr > 0)
-							tmp = transformed_fld[(State.ROWS - r - 2)][c];
+							tmp = transformed_fld[(State.ROWS - r + 1)][c];
 					} catch(Exception e) {
 						tmp = 0;
 					}
@@ -386,7 +410,8 @@ public class LSPIAI extends DummyAI implements Runnable {
             // print field
             player.printField(state.getField());
         }
-        /*
+        
+        */
 		Piece pieceNow = engine.nowPieceObject;
 		int nowX = engine.nowPieceX;
 		int nowY = engine.nowPieceY;
@@ -394,9 +419,24 @@ public class LSPIAI extends DummyAI implements Runnable {
 		boolean holdEmpty = false;
 		Piece pieceHold = engine.holdPieceObject;
 		Piece pieceNext = engine.getNextObject(engine.nextPieceCount);
+		Field fld = new Field(engine.field);
 		if (pieceHold == null) {
 			holdEmpty = true;
 		}
+		
+		// Convert to now State
+		// My now state
+		nowState = createState(fld, engine);
+
+		if (twoPlayerGame) {
+			GameEngine oppEngine;
+			Field oppFld;
+			oppEngine = engine.owner.engine[1 - engine.playerID];
+			oppFld = new Field(oppEngine.field);
+			// Opp now state
+			oppNowState = createState(oppFld, oppEngine);
+		}
+        
 
 		for (int depth = 0; depth < getMaxThinkDepth(); depth++) {
 			for (int rt = 0; rt < Piece.DIRECTION_COUNT; rt++) {
@@ -410,7 +450,7 @@ public class LSPIAI extends DummyAI implements Runnable {
 
 					if (!pieceNow.checkCollision(x, y, rt, fld)) {
 						// As it is
-						int pts = thinkMain(engine, x, y, rt, -1, fld, pieceNow, pieceNext, pieceHold, depth);
+						double pts = thinkMain(engine, x, y, rt, -1, fld, pieceNow, pieceNext, pieceHold, depth);
 
 						if (pts >= bestPts) {
 							bestHold = false;
@@ -421,9 +461,11 @@ public class LSPIAI extends DummyAI implements Runnable {
 							bestYSub = y;
 							bestRtSub = -1;
 							bestPts = pts;
+							savedLastf = lastf;
 						}
 
-						if ((depth > 0) || (bestPts <= 10) || (pieceNow.id == Piece.PIECE_T)) {
+						if ((depth > 0) || (pieceNow.id == Piece.PIECE_T)) {
+						//if ((depth > 0) || (bestPts <= 10) || (pieceNow.id == Piece.PIECE_T)) {
 							// Left shift
 							fld.copy(engine.field);
 							if (!pieceNow.checkCollision(x - 1, y, rt, fld)
@@ -439,6 +481,7 @@ public class LSPIAI extends DummyAI implements Runnable {
 									bestYSub = y;
 									bestRtSub = -1;
 									bestPts = pts;
+									savedLastf = lastf;
 								}
 							}
 
@@ -457,6 +500,7 @@ public class LSPIAI extends DummyAI implements Runnable {
 									bestYSub = y;
 									bestRtSub = -1;
 									bestPts = pts;
+									savedLastf = lastf;
 								}
 							}
 
@@ -493,6 +537,7 @@ public class LSPIAI extends DummyAI implements Runnable {
 									bestYSub = newY;
 									bestRtSub = rot;
 									bestPts = pts;
+									savedLastf = lastf;
 								}
 							}
 
@@ -529,6 +574,7 @@ public class LSPIAI extends DummyAI implements Runnable {
 									bestYSub = newY;
 									bestRtSub = rot;
 									bestPts = pts;
+									savedLastf = lastf;
 								}
 							}
 
@@ -565,6 +611,7 @@ public class LSPIAI extends DummyAI implements Runnable {
 									bestYSub = newY;
 									bestRtSub = rot;
 									bestPts = pts;
+									savedLastf = lastf;
 								}
 							}
 						}
@@ -590,7 +637,7 @@ public class LSPIAI extends DummyAI implements Runnable {
 							if (holdEmpty)
 								pieceNext2 = engine.getNextObject(engine.nextPieceCount + 1);
 
-							int pts = thinkMain(engine, x, y, rt, -1, fld, pieceHold, pieceNext2, null, depth);
+							double pts = thinkMain(engine, x, y, rt, -1, fld, pieceHold, pieceNext2, null, depth);
 
 							if (pts > bestPts) {
 								bestHold = true;
@@ -599,6 +646,7 @@ public class LSPIAI extends DummyAI implements Runnable {
 								bestRt = rt;
 								bestRtSub = -1;
 								bestPts = pts;
+								savedLastf = lastf;
 							}
 						}
 					}
@@ -608,11 +656,13 @@ public class LSPIAI extends DummyAI implements Runnable {
 			if (bestPts > 0)
 				break;
 		}
-		*/
 		thinkLastPieceNo++;
 
-		// System.out.println("X:" + bestX + " Y:" + bestY + " R:" + bestRt + " H:" +
-		// bestHold + " Pts:" + bestPts);
+		System.out.println("X:" + bestX + " Y:" + bestY + " R:" + bestRt + " H:" +
+		bestHold + " Pts:" + bestPts);
+//		for (int i = 0; i < TwoPlayerBasisFunction.FEATURE_COUNT; i++)
+//			System.out.println(lastf[i]);
+		System.out.println(savedLastf[3]);
 	}
 
 	/**
@@ -630,8 +680,72 @@ public class LSPIAI extends DummyAI implements Runnable {
 	 * @param depth     Compromise level (ranges from 0 through getMaxThinkDepth-1)
 	 * @return Evaluation score
 	 */
-	public int thinkMain(GameEngine engine, int x, int y, int rt, int rtOld, Field fld, Piece piece, Piece nextpiece,
+	public double thinkMain(GameEngine engine, int x, int y, int rt, int rtOld, Field fld, Piece piece, Piece nextpiece,
 			Piece holdpiece, int depth) {
+		double pts = 0;
+		
+		// T-Spin flag
+		boolean tspin = false;
+		if ((piece.id == Piece.PIECE_T) && (rtOld != -1) && (fld.isTSpinSpot(x, y, piece.big))) {
+			tspin = true;
+		}
+		
+		// Place the piece
+		if (!piece.placeToField(x, y, rt, fld)) {
+			return 0;
+		}
+
+		// Line clear
+		int lines = fld.checkLine();
+		if (lines > 0) {
+			fld.clearLine();
+			fld.downFloatingBlocks();
+		}
+
+		// All clear
+		boolean allclear = fld.isEmpty();
+		if (allclear)
+			pts += 500000;
+		
+		int lineSent = nowState.calLinesSentResult(lines);
+		
+		// Convert to future State
+
+		futureState = null;
+		oppFutureState = null;
+		
+		// My future state
+		futureState = createFutureState(nowState, fld, engine, 0, lineSent, lines);
+
+		if (twoPlayerGame) {
+			GameEngine oppEngine;
+			Field oppFld;
+			oppEngine = engine.owner.engine[1 - engine.playerID];
+			oppFld = oppEngine.field;
+			// Opp future state
+			oppFutureState = createFutureState(oppNowState, oppFld, oppEngine, lineSent, 0, 0);
+		}
+		
+		double[] f;
+		if (twoPlayerGame) {
+			f = player.getTwoPlayerBasisFunctions().getFeatureArray(nowState, futureState, oppNowState, oppFutureState);
+			for (int i = 0; i < TwoPlayerBasisFunction.FEATURE_COUNT; i++) {
+				pts += f[i] * player.getTwoPlayerBasisFunctions().weight[i];
+				//log.error(i + ":" + f[i]);
+			}
+		} else {
+			f = player.getBasisFunctions().getFeatureArray(nowState, futureState);
+			for (int i = 0; i < BasisFunction.FEATURE_COUNT; i++) {
+				pts += f[i] * player.getBasisFunctions().weight[i];
+				//log.error(i + ":" + f[i]);
+			}
+		}
+		
+		lastf = f;
+        
+		//log.error(pts);
+		return pts;
+		/*
 		int pts = 0;
 
 		// Add points for being adjacent to other blocks
@@ -778,6 +892,94 @@ public class LSPIAI extends DummyAI implements Runnable {
 		}
 
 		return pts;
+		*/
+	}
+
+	private State createState(Field fld, GameEngine engine) {
+		State newState = new State();
+		int[][] transformed_fld = new int[height + hiddenHeight][width];
+        for (int c = 0; c < width; c++) {
+        	for (int r = -hiddenHeight; r < height; r++) {
+        		transformed_fld[r + hiddenHeight][c] = fld.getBlockEmpty(c, r) ? 0 : 1;
+        	}
+        }
+        int heightest;
+        int rr;
+        int tmp;
+        for (int c = 0; c < State.COLS; c++) {
+			heightest = 0;
+	        for (int r = 0; r < State.ROWS; r++) {
+				try {
+					tmp = 0;
+					try {
+						rr = (State.ROWS - r - 1);
+						if (rr > 0)
+							tmp = transformed_fld[(State.ROWS - r - 1)][c];
+					} catch(Exception e) {
+						tmp = 0;
+					}
+					newState.getField()[r][c] = tmp;
+					if (tmp == 1)
+						heightest = Math.max(r + 1, heightest);
+				} catch(Exception e) {
+					System.out.println(e);
+				}
+	        }
+	        newState.getTop()[c] = heightest;
+        }
+        newState.addLinesStack(engine.meterValue / 8);
+        if (engine.owner.mode instanceof VSBattleMode) {
+        	VSBattleMode mode = (VSBattleMode)engine.owner.mode;
+        	newState.addLineSent(mode.getCurGarbageSent()[engine.playerID]);
+        } else {
+        	newState.addLineSent(engine.lineClearing);
+        }
+        newState.addLineCleared(engine.lineClearing);
+        return newState;
+	}
+	
+	private FutureState createFutureState(State oldState, Field fld, GameEngine engine, int deltaMeter, int deltaLineSent, int deltaLineCleared) {
+		FutureState newState = new FutureState();
+		newState.resetToCurrentState(oldState);
+		int[][] transformed_fld = new int[height + hiddenHeight][width];
+        for (int c = 0; c < width; c++) {
+        	for (int r = -hiddenHeight; r < height; r++) {
+        		transformed_fld[r + hiddenHeight][c] = fld.getBlockEmpty(c, r) ? 0 : 1;
+        	}
+        }
+        int heightest;
+        int rr;
+        int tmp;
+        for (int c = 0; c < State.COLS; c++) {
+			heightest = 0;
+	        for (int r = 0; r < State.ROWS; r++) {
+				try {
+					tmp = 0;
+					try {
+						rr = (State.ROWS - r - 1);
+						if (rr > 0)
+							tmp = transformed_fld[(State.ROWS - r - 1)][c];
+					} catch(Exception e) {
+						tmp = 0;
+					}
+					newState.getField()[r][c] = tmp;
+					if (tmp == 1)
+						heightest = Math.max(r + 1, heightest);
+				} catch(Exception e) {
+					System.out.println(e);
+				}
+	        }
+	        newState.getTop()[c] = heightest;
+        }
+        newState.addLinesStack(deltaMeter);
+        if (engine.owner.mode instanceof VSBattleMode) {
+        	VSBattleMode mode = (VSBattleMode)engine.owner.mode;
+        	newState.addLineSent(deltaLineSent);
+        } else {
+        	newState.addLineSent(deltaLineCleared);
+        }
+        newState.addLineCleared(deltaLineCleared);
+        return newState;
 	}
 
 	/**
@@ -793,7 +995,7 @@ public class LSPIAI extends DummyAI implements Runnable {
 	 * Processing of the thread
 	 */
 	public void run() {
-		log.info("BasicAI: Thread start");
+		log.info("LSPIAI: Thread start");
 		threadRunning = true;
 
 		while (threadRunning) {
@@ -803,7 +1005,7 @@ public class LSPIAI extends DummyAI implements Runnable {
 				try {
 					thinkBestPosition(gEngine, gEngine.playerID);
 				} catch (Throwable e) {
-					log.debug("BasicAI: thinkBestPosition Failed", e);
+					log.debug("LSPIAI: thinkBestPosition Failed", e);
 				}
 				thinking = false;
 			}
@@ -818,6 +1020,6 @@ public class LSPIAI extends DummyAI implements Runnable {
 		}
 
 		threadRunning = false;
-		log.info("BasicAI: Thread end");
+		log.info("LSPIAI: Thread end");
 	}
 }

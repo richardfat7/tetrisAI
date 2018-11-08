@@ -28,7 +28,9 @@ public class Trainer {
 		String score = "";
 		int consecutive_all_wins = 0;
 		int cnt = 0;
-
+		int tp1wins = 0;
+		int tp2wins = 0;
+		
 		// keep on training!
 		while(true) {
 			int p1wins = 0;
@@ -50,6 +52,8 @@ public class Trainer {
 				if(s1.hasLost()&&!s2.hasLost()) p2wins++;
 				else if(!s1.hasLost()&&s2.hasLost()) p1wins++;
 				else draw++;
+				tp1wins += p1wins;
+				tp2wins += p2wins;
 				
 				double sent = ((double)s1.getTotalLinesSent()/s1.getTurnNumber());
 				score = Double.toString(sent);
@@ -64,14 +68,20 @@ public class Trainer {
 			System.out.println(p2wins);
 			System.out.print("Draw: ");
 			System.out.println(draw);
-			if(p1wins > ROUNDS*9/10) consecutive_all_wins++;
+			System.out.print("P1 win rate: ");
+			System.out.println((double)tp1wins / (tp1wins + tp2wins));
+			if(p1wins > ROUNDS*8/10) consecutive_all_wins++;
 			else consecutive_all_wins = 0;
-			if(consecutive_all_wins == 5) {
+			if(consecutive_all_wins == 3) {
+				System.out.println("COPY WEIGHT");
+				tp1wins = 0;
+				tp2wins = 0;
 				// copy weight
 				for(int i = 0; i < bf2.weight.length; i++) {
-					System.out.println(bf1.weight[i]);
+					System.out.println(bf1.weight[i]+",");
 					bf2.weight[i] = bf1.weight[i];
 				}
+				consecutive_all_wins = 0;
 			}
 			
 			bf1.computeWeights();
@@ -127,7 +137,7 @@ public class Trainer {
 			s2.setNextPiece(nextPiece);
 
 			s1.makeMove(p1.pickMove(s1, s2, s1.legalMoves()));
-			s2.addlinesStack(s1.getLinesSent());
+			s2.addLinesStack(s1.getLinesSent());
 			//s1.draw();
 			//s1.drawNext(0,0);
 			//s2.draw();
@@ -135,7 +145,7 @@ public class Trainer {
 			//String input1 = System.console().readLine();
 			if (!s2.hasLost()) {
 				s2.makeMove(p2.pickMove(s2, s1, s2.legalMoves()));
-				s1.addlinesStack(s2.getLinesSent());
+				s1.addLinesStack(s2.getLinesSent());
 				//s1.draw();
 				//s1.drawNext(0,0);
 				//s2.draw();
