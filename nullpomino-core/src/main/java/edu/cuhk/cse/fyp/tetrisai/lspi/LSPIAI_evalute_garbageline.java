@@ -693,11 +693,11 @@ public class LSPIAI extends DummyAI implements Runnable {
 		}
 		thinkLastPieceNo++;
 
-		System.out.println("X:" + bestX + " Y:" + bestY + " R:" + bestRt + " H:" +
-		bestHold + " Pts:" + bestPts);
+		//System.out.println("X:" + bestX + " Y:" + bestY + " R:" + bestRt + " H:" +
+		//bestHold + " Pts:" + bestPts);
 //		for (int i = 0; i < TwoPlayerBasisFunction.FEATURE_COUNT; i++)
 //			System.out.println(lastf[i]);
-		System.out.println(savedLastf[3]);
+		//System.out.println(savedLastf[3]);
 	}
 	
 	/**
@@ -965,11 +965,11 @@ public class LSPIAI extends DummyAI implements Runnable {
 				break;
 		}
 
-		System.out.println("X:" + bestOppX + " Y:" + bestOppY + " R:" + bestOppRt + " H:" +
-		bestOppHold + " Pts:" + bestOppPts);
+		//System.out.println("X:" + bestOppX + " Y:" + bestOppY + " R:" + bestOppRt + " H:" +
+		//bestOppHold + " Pts:" + bestOppPts);
 //		for (int i = 0; i < TwoPlayerBasisFunction.FEATURE_COUNT; i++)
 //			System.out.println(lastf[i]);
-		System.out.println(savedLastf[3]);
+		//System.out.println(savedLastf[3]);
 	}
 	
 	/**
@@ -1111,24 +1111,21 @@ public class LSPIAI extends DummyAI implements Runnable {
 			Field oppFld = new Field();
 			Piece oppNow = new Piece();
 			int oppLines = 0;
-			if (oppEngine.nowPieceObject != null) { 
+			Piece saveNowPiece = oppEngine.nowPieceObject;
+			if (saveNowPiece != null) {
 				oppFld.copy(oppEngine.field);
-				oppNow.copy(oppEngine.nowPieceObject);
-				thinkbestOppPosition(oppEngine, 1 - engine.playerID);
-				oppNow.placeToField(bestOppX, bestOppY, oppFld);	
-				// Line clear
-				oppLines = oppFld.checkLine();
-				if (oppLines > 0) {
-					oppFld.clearLine();
-					oppFld.downFloatingBlocks();
-				}
+				oppNow.copy(saveNowPiece);
+				//thinkbestOppPosition(oppEngine, 1 - engine.playerID);
+				oppFld.addSingleHoleGarbage((int)(Math.random() * width), 0, 0, lineSent);
 			}
 			oppNowState = createState(oppFld, oppEngine);
 			int oppLineSent = oppNowState.calLinesSentResult(lines);
-			oppFutureState = createFutureState(oppNowState, oppFld, oppEngine, 0, oppLineSent, oppLines);
+			//oppFutureState = createFutureState(oppNowState, oppFld, oppEngine, 0, oppLineSent, oppLines);
+			oppFutureState = createFutureState(oppNowState, oppFld, oppEngine, 0, 0, 0);
 			
 			// My future state
-			futureState = createFutureState(nowState, fld, engine, oppLineSent, lineSent, lines);
+			//futureState = createFutureState(nowState, fld, engine, oppLineSent, lineSent, lines);
+			futureState = createFutureState(nowState, fld, engine, 0, lineSent, lines);
 		} else {
 			// My future state
 			futureState = createFutureState(nowState, fld, engine, 0, lineSent, lines);

@@ -15,7 +15,7 @@ public class Trainer {
 	private static Writer out = null;
 	
 	public static void main(String[] args) throws IOException {
-		if(out == null) out = new PrintWriter(new File("weight_lambda_oppmove.log"));
+		if(out == null) out = new PrintWriter(new File("weight.log"));
 		PlayerSkeleton p1 = new PlayerSkeleton();
 		p1.learns = true;
 		PlayerSkeleton p2 = new PlayerSkeleton();
@@ -91,12 +91,12 @@ public class Trainer {
 			//}
 			
 			cnt++;
-			if(cnt == 20) {
+			if(cnt == 100) {
 				System.out.println("Write weight to log file");
 				out.write("Weight:\n");
 				for(int i = 0; i < bf1.weight.length; i++) {
 					out.write(Double.toString(bf1.weight[i]));
-					out.write(",\n");
+					out.write('\n');
 				}
 				out.write('\n');
 				out.flush();
@@ -136,7 +136,7 @@ public class Trainer {
 			s1.setNextPiece(nextPiece);
 			s2.setNextPiece(nextPiece);
 
-			s1.makeMove(p1.pickMove(s1, s2, s1.legalMoves(), s2.legalMoves()));
+			s1.makeMove(p1.pickMove(s1, s2, s1.legalMoves()));
 			s2.addLinesStack(s1.getLinesSent());
 			//s1.draw();
 			//s1.drawNext(0,0);
@@ -144,7 +144,7 @@ public class Trainer {
 			//s2.drawNext(0,0);
 			//String input1 = System.console().readLine();
 			if (!s2.hasLost()) {
-				s2.makeMove(p2.pickMove(s2, s1, s2.legalMoves(), s1.legalMoves()));
+				s2.makeMove(p2.pickMove(s2, s1, s2.legalMoves()));
 				s1.addLinesStack(s2.getLinesSent());
 				//s1.draw();
 				//s1.drawNext(0,0);

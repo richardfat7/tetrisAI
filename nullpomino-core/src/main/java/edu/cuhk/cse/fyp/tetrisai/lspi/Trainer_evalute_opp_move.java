@@ -15,7 +15,7 @@ public class Trainer {
 	private static Writer out = null;
 	
 	public static void main(String[] args) throws IOException {
-		if(out == null) out = new PrintWriter(new File("weight_lambda_oppmove.log"));
+		if(out == null) out = new PrintWriter(new File("weight.log"));
 		PlayerSkeleton p1 = new PlayerSkeleton();
 		p1.learns = true;
 		PlayerSkeleton p2 = new PlayerSkeleton();
@@ -91,12 +91,12 @@ public class Trainer {
 			//}
 			
 			cnt++;
-			if(cnt == 20) {
+			if(cnt == 100) {
 				System.out.println("Write weight to log file");
 				out.write("Weight:\n");
 				for(int i = 0; i < bf1.weight.length; i++) {
 					out.write(Double.toString(bf1.weight[i]));
-					out.write(",\n");
+					out.write('\n');
 				}
 				out.write('\n');
 				out.flush();

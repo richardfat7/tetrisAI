@@ -162,7 +162,7 @@ public class PlayerSkeleton {
 		int maxMove = m ;
 		while(m != init){
 			fs.makeMove(m);
-			fs2.addLines(fs.getLinesSent());
+			fs2.addLinesStack(fs.getLinesSent());
 			if(!fs.hasLost()) {
 				double[] f = bs2.getFeatureArray(s1, fs, s2, fs2);
 				score = 0;

@@ -98,6 +98,30 @@ public class FutureState extends State{
 	}
 	
 	// add lines stack to field
+	public boolean addLines(int linesStack) {
+		// check if game end
+		for (int i = ROWS-1; i > ROWS-1-linesStack; i--) {
+			for (int j = 0; j < COLS; j++) {
+				if (field[i][j] != 0) {
+					lost = true;
+					return false;
+				}
+			}
+		}
+		Random rand = new Random();
+		int hole = rand.nextInt(COLS);
+		for (int i = ROWS-1; i >= 0; i--) {
+			for (int j = 0; j < COLS; j++) {
+				if (i < linesStack) field[i][j] = (j==hole?0:1);//turn);
+				else field[i][j] = field[i-linesStack][j];
+			}
+		}
+		for (int i = 0; i < COLS; i++) top[i] += linesStack;
+		linesStack = 0;
+		return true;
+	}
+	
+	// add lines stack to field
 	private boolean addLines() {
 		// check if game end
 		for (int i = ROWS-1; i > ROWS-1-linesStack; i--) {

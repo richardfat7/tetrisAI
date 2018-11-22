@@ -4,6 +4,8 @@ public class TwoPlayerBasisFunction {
 
 	// discount value, part of the LRQ algo.
 	final private static double DISCOUNT = 0.96f;
+	
+	final private static double LAMBDA = 0.7f;
 
 	/**
 	 * Below are features being used for scoring.
@@ -88,6 +90,7 @@ public class TwoPlayerBasisFunction {
 	 */
 	double[][] A = new double[FEATURE_COUNT][FEATURE_COUNT];
 	double[][] b = new double[FEATURE_COUNT][1]; 
+	double[][] z = new double[FEATURE_COUNT][1]; 
 	double[] weight = new double[FEATURE_COUNT];
 	
 	{
@@ -99,40 +102,42 @@ public class TwoPlayerBasisFunction {
 	
 
 	{
-		weight = new double[] {
-				-0.03755602398712404,
-				-0.6205931426793491,
-				1.3255928072321213,
-				-0.24347538920661857,
-				0.04793014173104931,
-				-0.0767716062921388,
-				-0.013998256515491997,
-				0.07112787738772364,
-				-0.002919585728180407,
-				-0.02787275499580748,
-				-0.27280819228892944,
-				-0.03445210665769526,
-				0.03428011242546465,
-				-0.0067643176183374435,
-				-0.06485594209263393,
-				0.13622910603807156,
-				0.094602253628787,
-				-0.3088365066247718,
-				0.00264123418693594,
-				-0.0014221050198048376,
-				-0.0030134890415154363,
-				-0.0012294930829592867,
-				-3.648437395086459E-5,
-				-9.05310067488159E-4,
-				9.80378430157671E-4,
-				0.0029866611107955358,
-				5.088054288160314E-4,
-				2.3929305524398312E-4,
-				0.0010413609155163843,
-				2.493624393054058E-4,
-				-6.11552085932594,
-				0.0038796909555191485,
-		};
+//		weight = new double[] {
+//				-0.20622177896937224,
+//				0.016205541492002477,
+//				1.235381323112748,
+//				-0.10319223307355785,
+//				0.17926263371212325,
+//				-0.1207512567880561,
+//				0.0012024281039741216,
+//				0.030968487941437833,
+//				-0.048679464029570685,
+//				-0.05071593215113885,
+//				-0.21783239120802741,
+//				0.006756927509485396,
+//				-0.035859960335610785,
+//				-0.01236896860152976,
+//				-0.07801093262463116,
+//				0.5121838888641603,
+//				0.039860795790573694,
+//				-0.47129131883711217,
+//				-0.08611146660838641,
+//				-0.011886868102488419,
+//				0.07821468656690553,
+//				0.007416087768147295,
+//				0.0018930216988144151,
+//				0.0035250046186331477,
+//				0.026010339108017994,
+//				0.01245467654216692,
+//				0.00859661483721517,
+//				-0.00850448693556203,
+//				-0.02545573777396601,
+//				-0.010207511160263676,
+//				-5.2050798435802195,
+//				0.008857241632929875,
+//
+//
+//		};
 	}
 	
 	private double[] features = new double[FEATURE_COUNT]; 
@@ -375,6 +380,7 @@ public class TwoPlayerBasisFunction {
 	private double[][] mFutureFeatures = new double[1][FEATURE_COUNT];
 	private double[][] mRowFeatures = new double[1][FEATURE_COUNT];
 	private double[][] changeToA = new double[FEATURE_COUNT][FEATURE_COUNT];
+	private double[][] zz = new double[FEATURE_COUNT][1];
 
 	/**
 	 * Matrix update function. See above for descriptions.
@@ -388,17 +394,24 @@ public class TwoPlayerBasisFunction {
 	 */
 	public void updateMatrices(State s,double[] features,double[] futureFeatures) {
 		//preprocessing
+		
 		Matrix.arrayToCol(features, mFeatures);
+		
+
+		Matrix.multiply(DISCOUNT*LAMBDA, z);
+		Matrix.sum(z, mFeatures);
+		Matrix.copy(z, zz);
+		
 		Matrix.arrayToRow(futureFeatures, mFutureFeatures);
 		Matrix.arrayToRow(features, mRowFeatures);
 		Matrix.multiply(-1*DISCOUNT, mFutureFeatures);
 		Matrix.sum(mRowFeatures, mFutureFeatures);
-		Matrix.product(mFeatures,mRowFeatures,changeToA);
+		Matrix.product(z, mRowFeatures,changeToA);
 		Matrix.sum(A,changeToA);
 //		Matrix.multiply(features[OPPO_DIFF_DIE], mFeatures);
-		Matrix.multiply(features[DIFF_LINES_SENT], mFeatures);
+		Matrix.multiply(features[DIFF_LINES_SENT], zz);
 //		Matrix.multiply(features[DIFF_ROWS_COMPLETED], mFeatures);
-		Matrix.sum(b,mFeatures);
+		Matrix.sum(b, zz);
 	}
 
 	/**
