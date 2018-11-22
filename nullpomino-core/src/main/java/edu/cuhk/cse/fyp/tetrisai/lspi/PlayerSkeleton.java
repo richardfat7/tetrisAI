@@ -111,9 +111,37 @@ public class PlayerSkeleton {
 		//if(count%1000==0) System.out.println(Arrays.toString(test)); 
 		return maxMove;
 	}
+	
+
+	// ********************************************************************************************************************
+	// double player consider opponent one move
+	public int pickMove(State s1, State s2, int[][] legalMoves, int[][] oppLegalMoves) {
+		if(feature==null) feature = new double[TwoPlayerBasisFunction.FEATURE_COUNT];
+		if(fs==null) fs = new FutureState();
+		if(fs2==null) fs2 = new FutureState();
+		fs.resetToCurrentState(s1); //set the state to the current to prepare to simulate next move.
+		fs2.resetToCurrentState(s2);
+		int maxMove = pickBestMove(s1, s2, legalMoves, oppLegalMoves, feature);  //pick best move returns the highest scoring weighted features
+		fs.makeMove(maxMove);//simulate next step
+		if(learns) {
+			if(past == null) past = new double[TwoPlayerBasisFunction.FEATURE_COUNT]; 
+			else {
+				bs2.updateMatrices(s1, past, feature); //updates the matrices - adds the current "instance" into its training data
+			}
+		}
+		double[] tmp = feature;		//swap the past and present around - reuse, reduce and recycle arrays.:)
+		feature = past;
+		past = tmp;
+		count++;
+		//if(count%1000==0) System.out.println(Arrays.toString(test)); 
+		return maxMove;
+	}
+	
+	
 	TwoPlayerBasisFunction getTwoPlayerBasisFunctions() {
 		return bs2;
 	}
+
 	/**
 	 * Given the current state, and the set of legal moves, decide the index of the move to be taken.
 	 * Score is essentially does multiplies each feature with its corresponding weight, and sums it all up.
@@ -136,6 +164,66 @@ public class PlayerSkeleton {
 			fs.makeMove(m);
 			fs2.addLinesStack(fs.getLinesSent());
 			if(!fs.hasLost()) {
+				double[] f = bs2.getFeatureArray(s1, fs, s2, fs2);
+				score = 0;
+				for(int i=0;i<f.length;i++) score += f[i] * bs2.weight[i];
+				if(maxScore < score) {
+					maxScore = score;
+					maxMove = m;
+					if(learns) System.arraycopy(f,0,feature,0,f.length);
+				}
+			}
+			fs.resetToCurrentState(s1);
+			fs2.resetToCurrentState(s2);
+			m = (m+1)%d;
+		}
+		
+		return maxMove;
+	}
+	
+	/**
+	 * Given the current state, and the set of legal moves, decide the index of the move to be taken.
+	 * Score is essentially does multiplies each feature with its corresponding weight, and sums it all up.
+	 * 
+	 * @param s Current state
+	 * @param legalMoves Available moves to be made
+	 * @param feature Temporary array for storing features
+	 * @return
+	 */
+	// double player consider oppo
+	public int pickBestMove(State s1, State s2, int[][] legalMoves, int[][] oppLegalMoves, double[] feature){
+		double score;
+		double maxScore = Double.NEGATIVE_INFINITY;
+
+		int d = legalMoves.length;
+		int od = oppLegalMoves.length;
+		int init = (int)(Math.random()*d); //randomise the starting point to look at so that 0 is not always the first highest score
+		int m = (init+1)%d;
+		int maxMove = m;
+		while(m != init){
+			fs.makeMove(m);
+			fs2.addLinesStack(fs.getLinesSent());
+			if(!fs.hasLost()) {
+				int oinit = (int)(Math.random()*od);
+				int om = (oinit+1)%od;
+				double oscore;
+				double oMaxScore = Double.NEGATIVE_INFINITY;
+				int oMaxMove = om;
+				while(om != oinit){
+					fs2.makeMove(om);
+					fs.addLinesStack(fs2.getLinesSent());
+					if(!fs2.hasLost()) {
+						double[] of = bs2.getFeatureArray(s2, fs2, s1, fs);
+						oscore = 0;
+						for(int i=0;i<of.length;i++) oscore += of[i] * bs2.weight[i];
+						if(oMaxScore < oscore) {
+							oMaxScore = oscore;
+							oMaxMove = om;
+						}
+					}
+					om = (om+1)%od;
+				}
+				fs2.makeMove(oMaxMove);
 				double[] f = bs2.getFeatureArray(s1, fs, s2, fs2);
 				score = 0;
 				for(int i=0;i<f.length;i++) score += f[i] * bs2.weight[i];

@@ -246,7 +246,7 @@ public class State {
 		int hole = rand.nextInt(COLS);
 		for (int i = ROWS-1; i >= 0; i--) {
 			for (int j = 0; j < COLS; j++) {
-				if (i < linesStack) field[i][j] = (j==hole?0:turn);
+				if (i < linesStack) field[i][j] = (j==hole?0:1);//);
 				else field[i][j] = field[i-linesStack][j];
 			}
 		}
@@ -382,7 +382,7 @@ public class State {
 		for(int i = 0; i < pWidth[nextPiece][orient]; i++) {
 			//from bottom to top of brick
 			for(int h = height+pBottom[nextPiece][orient][i]; h < height+pTop[nextPiece][orient][i]; h++) {
-				field[h][i+slot] = turn;
+				field[h][i+slot] = 1;//turn;
 			}
 		}
 		
@@ -410,7 +410,10 @@ public class State {
 				for(int c = 0; c < COLS; c++) {
 					//slide down all bricks
 					for(int i = r; i < top[c]; i++) {
-						field[i][c] = field[i+1][c];
+						if (i+1 == 23)
+							field[i][c] = 0;
+						else
+							field[i][c] = field[i+1][c];
 					}
 					//lower the top
 					top[c]--;

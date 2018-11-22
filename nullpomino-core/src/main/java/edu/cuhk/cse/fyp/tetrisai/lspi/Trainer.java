@@ -136,7 +136,7 @@ public class Trainer {
 			s1.setNextPiece(nextPiece);
 			s2.setNextPiece(nextPiece);
 
-			s1.makeMove(p1.pickMove(s1, s2, s1.legalMoves()));
+			s1.makeMove(p1.pickMove(s1, s2, s1.legalMoves(), s2.legalMoves()));
 			s2.addLinesStack(s1.getLinesSent());
 			//s1.draw();
 			//s1.drawNext(0,0);
@@ -144,7 +144,7 @@ public class Trainer {
 			//s2.drawNext(0,0);
 			//String input1 = System.console().readLine();
 			if (!s2.hasLost()) {
-				s2.makeMove(p2.pickMove(s2, s1, s2.legalMoves()));
+				s2.makeMove(p2.pickMove(s2, s1, s2.legalMoves(), s1.legalMoves()));
 				s1.addLinesStack(s2.getLinesSent());
 				//s1.draw();
 				//s1.drawNext(0,0);

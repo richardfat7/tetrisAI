@@ -693,11 +693,11 @@ public class LSPIAI extends DummyAI implements Runnable {
 		}
 		thinkLastPieceNo++;
 
-		//System.out.println("X:" + bestX + " Y:" + bestY + " R:" + bestRt + " H:" +
-		//bestHold + " Pts:" + bestPts);
+		System.out.println("X:" + bestX + " Y:" + bestY + " R:" + bestRt + " H:" +
+		bestHold + " Pts:" + bestPts);
 //		for (int i = 0; i < TwoPlayerBasisFunction.FEATURE_COUNT; i++)
 //			System.out.println(lastf[i]);
-		//System.out.println(savedLastf[3]);
+		System.out.println(savedLastf[3]);
 	}
 	
 	/**
@@ -965,11 +965,11 @@ public class LSPIAI extends DummyAI implements Runnable {
 				break;
 		}
 
-		//System.out.println("X:" + bestOppX + " Y:" + bestOppY + " R:" + bestOppRt + " H:" +
-		//bestOppHold + " Pts:" + bestOppPts);
+		System.out.println("X:" + bestOppX + " Y:" + bestOppY + " R:" + bestOppRt + " H:" +
+		bestOppHold + " Pts:" + bestOppPts);
 //		for (int i = 0; i < TwoPlayerBasisFunction.FEATURE_COUNT; i++)
 //			System.out.println(lastf[i]);
-		//System.out.println(savedLastf[3]);
+		System.out.println(savedLastf[3]);
 	}
 	
 	/**
